@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -12,21 +11,24 @@
     --bg: #0a0a0f;
     --surface: #12121a;
     --border: #1e1e2e;
-    --accent: #e63946;       /* core / center */
-    --arterial: #f4a261;     /* arterial */
-    --venous: #a8dadc;       /* venous */
-    --ischemic: #ffd166;     /* ischemic */
-    --hemorrhagic: #ef476f;  /* hemorrhagic */
-    --thrombotic: #06d6a0;   /* thrombotic */
-    --embolic: #118ab2;      /* embolic */
-    --lacunar: #c77dff;      /* lacunar */
-    --nonathero: #ff9f1c;    /* non-atherosclerotic */
-    --type: #2a9d8f;         /* MCA types */
+    --accent: #e63946;
+    --arterial: #f4a261;
+    --venous: #a8dadc;
+    --ischemic: #ffd166;
+    --hemorrhagic: #ef476f;
+    --thrombotic: #06d6a0;
+    --embolic: #118ab2;
+    --lacunar: #c77dff;
+    --nonathero: #ff9f1c;
+    --type: #2a9d8f;
     --child: #a8dadc;
     --muted: #6b7280;
     --text: #e8e8f0;
     --border-soft: rgba(255,255,255,0.07);
   }
+
+  html { scroll-behavior: smooth; }
+
   body {
     background: var(--bg);
     color: var(--text);
@@ -34,144 +36,181 @@
     min-height: 100vh;
     overflow-x: hidden;
   }
+
+  /* Noise texture — position:absolute instead of fixed so it covers the full
+     scrollable document on GitHub Pages (fixed only covers the viewport) */
   body::before {
     content: '';
-    position: fixed; inset: 0;
+    position: absolute; inset: 0;
+    min-height: 100%;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-    pointer-events: none; z-index: 9999; opacity: 0.4;
+    pointer-events: none; z-index: 0; opacity: 0.4;
   }
 
-/* HEADER */
-header {
-padding: 1.5rem 2rem 1rem;
-border-bottom: 1px solid var(–border);
-display: flex; align-items: baseline; gap: 1rem; flex-wrap: wrap;
-}
-header h1 { font-size: clamp(1.3rem,3.5vw,2rem); font-weight: 800; letter-spacing: -0.03em; }
-header h1 span { color: var(–accent); }
-.subtitle { font-family: ‘Space Mono’, monospace; font-size: 0.65rem; color: var(–muted); letter-spacing: 0.1em; text-transform: uppercase; }
-.legend { margin-left: auto; display: flex; gap: 0.8rem; flex-wrap: wrap; align-items: center; }
-.leg { display: flex; align-items: center; gap: 0.35rem; font-size: 0.62rem; font-family: ‘Space Mono’, monospace; color: var(–muted); }
-.leg-dot { width: 8px; height: 8px; border-radius: 50%; }
+  /* Ensure all content sits above the texture */
+  header, .page, .footer-note { position: relative; z-index: 1; }
 
-/* LAYOUT */
-.page { padding: 1.5rem 1rem 3rem; display: flex; flex-direction: column; align-items: center; gap: 1.8rem; }
+  /* HEADER */
+  header {
+    padding: 1.5rem 2rem 1rem;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: baseline; gap: 1rem; flex-wrap: wrap;
+    /* Constrain width to match artifact feel */
+    max-width: 1180px;
+    margin: 0 auto;
+    width: 100%;
+  }
+  /* Outer wrapper to center everything at a consistent max-width */
+  .page-wrapper {
+    max-width: 1180px;
+    margin: 0 auto;
+    width: 100%;
+  }
 
-/* SECTION LABELS */
-.sec-label {
-font-family: ‘Space Mono’, monospace; font-size: 0.58rem; letter-spacing: 0.14em;
-text-transform: uppercase; color: var(–muted); margin-bottom: 0.4rem; text-align: center;
-}
+  header h1 { font-size: clamp(1.3rem,3.5vw,2rem); font-weight: 800; letter-spacing: -0.03em; }
+  header h1 span { color: var(--accent); }
+  .subtitle { font-family: 'Space Mono', monospace; font-size: 0.65rem; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; }
+  .legend { margin-left: auto; display: flex; gap: 0.8rem; flex-wrap: wrap; align-items: center; }
+  .leg { display: flex; align-items: center; gap: 0.35rem; font-size: 0.62rem; font-family: 'Space Mono', monospace; color: var(--muted); }
+  .leg-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
 
-/* NODE BASE */
-.node {
-position: relative; cursor: pointer;
-transition: transform 0.15s ease, filter 0.15s ease;
-}
-.node:hover { transform: translateY(-2px); filter: brightness(1.15); }
-.n {
-border-radius: 5px; padding: 0.5rem 0.9rem;
-border: 1px solid; text-align: center; position: relative; overflow: hidden;
-}
-.n::before { content: ‘’; position: absolute; inset: 0; opacity: 0.06; background: currentColor; }
-.lbl { font-size: 0.75rem; font-weight: 600; line-height: 1.3; position: relative; }
-.sub { font-family: ‘Space Mono’, monospace; font-size: 0.58rem; color: var(–muted); margin-top: 0.15rem; position: relative; }
+  /* LAYOUT */
+  .page { padding: 1.5rem 1rem 3rem; display: flex; flex-direction: column; align-items: center; gap: 1.8rem; }
 
-/* TOOLTIP */
-.tip {
-display: none; position: absolute;
-bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%);
-background: #16162a; border: 1px solid var(–border);
-border-radius: 6px; padding: 0.7rem 0.9rem; width: 210px;
-font-size: 0.68rem; line-height: 1.5; color: var(–text); z-index: 200;
-box-shadow: 0 8px 30px rgba(0,0,0,0.6); text-align: left;
-font-family: ‘Space Mono’, monospace;
-}
-.tip::after {
-content: ‘’; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
-border: 5px solid transparent; border-top-color: var(–border);
-}
-.node:hover .tip, .node:focus .tip { display: block; }
+  /* SECTION LABELS */
+  .sec-label {
+    font-family: 'Space Mono', monospace; font-size: 0.58rem; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--muted); margin-bottom: 0.4rem; text-align: center;
+  }
 
-/* COLOR CLASSES */
-.c-center    { color: var(–accent);       border-color: var(–accent); }
-.c-arterial  { color: var(–arterial);     border-color: var(–arterial); }
-.c-venous    { color: var(–venous);       border-color: var(–venous); }
-.c-ischemic  { color: var(–ischemic);     border-color: var(–ischemic); }
-.c-hemor     { color: var(–hemorrhagic);  border-color: var(–hemorrhagic); }
-.c-thromb    { color: var(–thrombotic);   border-color: var(–thrombotic); }
-.c-embolic   { color: var(–embolic);      border-color: rgba(17,138,178,0.7); }
-.c-lacunar   { color: var(–lacunar);      border-color: rgba(199,125,255,0.6); }
-.c-nonathero { color: var(–nonathero);    border-color: rgba(255,159,28,0.6); }
-.c-type      { color: var(–type);         border-color: var(–type); }
-.c-child     { color: var(–child);        border-color: rgba(168,218,220,0.45); }
-.c-muted     { color: #94a3b8;             border-color: rgba(148,163,184,0.3); }
+  /* NODE BASE */
+  .node {
+    position: relative; cursor: pointer;
+    transition: transform 0.15s ease, filter 0.15s ease;
+  }
+  .node:hover { transform: translateY(-2px); filter: brightness(1.15); }
+  .n {
+    border-radius: 5px; padding: 0.5rem 0.9rem;
+    border: 1px solid; text-align: center; position: relative; overflow: hidden;
+  }
+  .n::before { content: ''; position: absolute; inset: 0; opacity: 0.06; background: currentColor; }
+  .lbl { font-size: 0.75rem; font-weight: 600; line-height: 1.3; position: relative; }
+  .sub { font-family: 'Space Mono', monospace; font-size: 0.58rem; color: var(--muted); margin-top: 0.15rem; position: relative; }
 
-/* ROW / COL */
-.row { display: flex; gap: 0.7rem; justify-content: center; flex-wrap: wrap; width: 100%; max-width: 1150px; }
-.col { display: flex; flex-direction: column; align-items: center; gap: 0.55rem; }
-.wide .n { min-width: 150px; }
-.xwide .n { min-width: 190px; }
+  /* TOOLTIP — smart edge-awareness via JS class toggling */
+  .tip {
+    display: none; position: absolute;
+    bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%);
+    background: #16162a; border: 1px solid var(--border);
+    border-radius: 6px; padding: 0.7rem 0.9rem; width: 210px;
+    font-size: 0.68rem; line-height: 1.5; color: var(--text); z-index: 200;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.6); text-align: left;
+    font-family: 'Space Mono', monospace;
+    /* Prevent overflow past viewport edges */
+    max-width: min(210px, 80vw);
+  }
+  .tip::after {
+    content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+    border: 5px solid transparent; border-top-color: var(--border);
+  }
+  /* Tooltip pinned left when node is near right edge */
+  .node.tip-left .tip  { left: 0; transform: none; }
+  .node.tip-left .tip::after { left: 20px; transform: none; }
+  /* Tooltip pinned right when node is near left edge */
+  .node.tip-right .tip { left: auto; right: 0; transform: none; }
+  .node.tip-right .tip::after { left: auto; right: 20px; transform: none; }
+  /* Tooltip below node when near top of page */
+  .node.tip-below .tip {
+    bottom: auto; top: calc(100% + 8px);
+  }
+  .node.tip-below .tip::after {
+    top: auto; bottom: 100%;
+    border-top-color: transparent; border-bottom-color: var(--border);
+  }
 
-/* CENTER */
-.center-node .n {
-padding: 0.9rem 2rem; border-radius: 8px; border-width: 2px;
-box-shadow: 0 0 40px rgba(230,57,70,0.18), 0 0 80px rgba(230,57,70,0.06);
-}
-.center-node .lbl { font-size: 1rem; font-weight: 800; letter-spacing: -0.02em; }
+  .node:hover .tip, .node:focus .tip { display: block; }
 
-/* CONNECTOR LINES using CSS borders */
-.branch-row { position: relative; }
-.branch-row::before {
-content: ‘’; position: absolute; top: 0; left: 50%;
-transform: translateX(-50%);
-width: 1px; height: 1.2rem; background: var(–border);
-}
+  /* COLOR CLASSES */
+  .c-center    { color: var(--accent);       border-color: var(--accent); }
+  .c-arterial  { color: var(--arterial);     border-color: var(--arterial); }
+  .c-venous    { color: var(--venous);       border-color: var(--venous); }
+  .c-ischemic  { color: var(--ischemic);     border-color: var(--ischemic); }
+  .c-hemor     { color: var(--hemorrhagic);  border-color: var(--hemorrhagic); }
+  .c-thromb    { color: var(--thrombotic);   border-color: var(--thrombotic); }
+  .c-embolic   { color: var(--embolic);      border-color: rgba(17,138,178,0.7); }
+  .c-lacunar   { color: var(--lacunar);      border-color: rgba(199,125,255,0.6); }
+  .c-nonathero { color: var(--nonathero);    border-color: rgba(255,159,28,0.6); }
+  .c-type      { color: var(--type);         border-color: var(--type); }
+  .c-child     { color: var(--child);        border-color: rgba(168,218,220,0.45); }
+  .c-muted     { color: #94a3b8;             border-color: rgba(148,163,184,0.3); }
 
-/* DIVIDER */
-.vdiv { width: 1px; background: var(–border); align-self: stretch; margin: 0 0.3rem; opacity: 0.5; }
+  /* ROW / COL */
+  .row { display: flex; gap: 0.7rem; justify-content: center; flex-wrap: wrap; width: 100%; max-width: 1150px; }
+  .col { display: flex; flex-direction: column; align-items: center; gap: 0.55rem; }
+  .wide .n { min-width: 150px; }
+  .xwide .n { min-width: 190px; }
 
-/* SECTION BOX */
-.sbox {
-border: 1px solid var(–border); border-radius: 8px;
-padding: 1rem 1.4rem; width: 100%; max-width: 1100px;
-background: rgba(255,255,255,0.01);
-}
-.sbox-title {
-font-family: ‘Space Mono’, monospace; font-size: 0.6rem;
-letter-spacing: 0.12em; text-transform: uppercase;
-margin-bottom: 0.8rem;
-}
+  /* CENTER NODE */
+  .center-node .n {
+    padding: 0.9rem 2rem; border-radius: 8px; border-width: 2px;
+    box-shadow: 0 0 40px rgba(230,57,70,0.18), 0 0 80px rgba(230,57,70,0.06);
+  }
+  .center-node .lbl { font-size: 1rem; font-weight: 800; letter-spacing: -0.02em; }
 
-/* FEATURE BADGES */
-.badge {
-display: inline-block; background: rgba(255,255,255,0.03);
-border: 1px solid var(–border); border-radius: 3px;
-padding: 0.2rem 0.55rem; font-family: ‘Space Mono’, monospace;
-font-size: 0.6rem; color: var(–muted); margin: 0.12rem;
-transition: border-color 0.2s, color 0.2s;
-}
-.badge:hover { border-color: var(–type); color: var(–type); }
+  /* DIVIDER */
+  .vdiv { width: 1px; background: var(--border); align-self: stretch; margin: 0 0.3rem; opacity: 0.5; }
 
-/* GRID */
-.gcols { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px,1fr)); gap: 1rem; }
-.gcols h4 { font-size: 0.58rem; font-family: ‘Space Mono’, monospace; color: var(–muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.4rem; }
+  /* SECTION BOX */
+  .sbox {
+    border: 1px solid var(--border); border-radius: 8px;
+    padding: 1rem 1.4rem; width: 100%; max-width: 1100px;
+    background: rgba(255,255,255,0.01);
+  }
+  .sbox-title {
+    font-family: 'Space Mono', monospace; font-size: 0.6rem;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    margin-bottom: 0.8rem;
+  }
 
-/* TABLE */
-table { width: 100%; border-collapse: collapse; font-size: 0.68rem; font-family: ‘Space Mono’, monospace; }
-th { padding: 0.4rem 0.7rem; text-align: left; background: rgba(255,255,255,0.04); color: var(–muted); font-size: 0.58rem; letter-spacing: 0.06em; text-transform: uppercase; border-bottom: 1px solid var(–border); }
-td { padding: 0.4rem 0.7rem; border-bottom: 1px solid rgba(255,255,255,0.04); vertical-align: top; }
-tr:hover td { background: rgba(255,255,255,0.02); }
-.hi { color: var(–accent); font-weight: 700; }
-.hg { color: var(–thrombotic); }
+  /* FEATURE BADGES */
+  .badge {
+    display: inline-block; background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border); border-radius: 3px;
+    padding: 0.2rem 0.55rem; font-family: 'Space Mono', monospace;
+    font-size: 0.6rem; color: var(--muted); margin: 0.12rem;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .badge:hover { border-color: var(--type); color: var(--type); }
 
-footer-note { display: block; text-align: center; font-family: ‘Space Mono’, monospace; font-size: 0.58rem; color: var(–muted); padding: 1.5rem; letter-spacing: 0.05em; }
+  /* GRID */
+  .gcols { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px,1fr)); gap: 1rem; }
+  .gcols h4 { font-size: 0.58rem; font-family: 'Space Mono', monospace; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.4rem; }
 
-@media(max-width:600px){ header{flex-direction:column;} .legend{margin-left:0;} }
+  /* TABLE */
+  table { width: 100%; border-collapse: collapse; font-size: 0.68rem; font-family: 'Space Mono', monospace; }
+  th { padding: 0.4rem 0.7rem; text-align: left; background: rgba(255,255,255,0.04); color: var(--muted); font-size: 0.58rem; letter-spacing: 0.06em; text-transform: uppercase; border-bottom: 1px solid var(--border); }
+  td { padding: 0.4rem 0.7rem; border-bottom: 1px solid rgba(255,255,255,0.04); vertical-align: top; }
+  tr:hover td { background: rgba(255,255,255,0.02); }
+  .hi { color: var(--accent); font-weight: 700; }
+  .hg { color: var(--thrombotic); }
+
+  /* FOOTER — now a proper div */
+  .footer-note {
+    display: block; text-align: center;
+    font-family: 'Space Mono', monospace; font-size: 0.58rem;
+    color: var(--muted); padding: 1.5rem; letter-spacing: 0.05em;
+  }
+
+  @media(max-width:600px){
+    header { flex-direction: column; }
+    .legend { margin-left: 0; }
+    .vdiv { display: none; }
+  }
 </style>
-
 </head>
 <body>
+
+<div class="page-wrapper">
 
 <header>
   <div>
@@ -191,11 +230,8 @@ footer-note { display: block; text-align: center; font-family: ‘Space Mono’,
 
 <div class="page">
 
-  <!-- ═══════════════════════════════ ETIOLOGY TOP ═══════════════════════════ -->
-
+  <!-- ═══════ ETIOLOGY ═══════ -->
   <p class="sec-label">Etiology — Broad Classification</p>
-
-  <!-- Level 1: Atherosclerotic vs Non-Atherosclerotic -->
 
   <div class="row">
     <div class="col">
@@ -219,52 +255,50 @@ footer-note { display: block; text-align: center; font-family: ‘Space Mono’,
     </div>
   </div>
 
-  <!-- RISK FACTORS -->
-
-  <div class="sbox" style="max-width:900px">
+  <!-- Risk Factors -->
+  <div class="sbox">
     <p class="sbox-title" style="color:var(--arterial)">Risk Factors</p>
-    <div class="gcols" style="grid-template-columns: repeat(auto-fit, minmax(140px,1fr))">
+    <div class="gcols">
       <div>
         <h4>Modifiable</h4>
-        <span class="badge" style="display:block;margin-bottom:0.3rem">Hypertension <span style="color:var(--accent)">★ #1</span></span>
-        <span class="badge" style="display:block;margin-bottom:0.3rem">Atrial Fibrillation</span>
-        <span class="badge" style="display:block;margin-bottom:0.3rem">Diabetes Mellitus</span>
-        <span class="badge" style="display:block;margin-bottom:0.3rem">Dyslipidemia</span>
-        <span class="badge" style="display:block;margin-bottom:0.3rem">Smoking</span>
-        <span class="badge" style="display:block;margin-bottom:0.3rem">Obesity / Physical inactivity</span>
+        <span class="badge">Hypertension ★ #1</span>
+        <span class="badge">Atrial Fibrillation</span>
+        <span class="badge">Diabetes Mellitus</span>
+        <span class="badge">Dyslipidemia</span>
+        <span class="badge">Smoking</span>
+        <span class="badge">Obesity / Physical inactivity</span>
       </div>
       <div>
         <h4>Cardiac Sources</h4>
-        <span class="badge" style="display:block;margin-bottom:0.3rem">Mitral stenosis</span>
-        <span class="badge" style="display:block;margin-bottom:0.3rem">Atrial fibrillation</span>
-        <span class="badge" style="display:block;margin-bottom:0.3rem">Prosthetic valve</span>
-        <span class="badge" style="display:block;margin-bottom:0.3rem">Dilated cardiomyopathy</span>
-        <span class="badge" style="display:block;margin-bottom:0.3rem">Recent MI (≤4–6 wks)</span>
-        <span class="badge" style="display:block;margin-bottom:0.3rem">Sick sinus syndrome</span>
+        <span class="badge">Mitral stenosis</span>
+        <span class="badge">Atrial fibrillation</span>
+        <span class="badge">Prosthetic valve</span>
+        <span class="badge">Dilated cardiomyopathy</span>
+        <span class="badge">Recent MI (≤4–6 wks)</span>
+        <span class="badge">Sick sinus syndrome</span>
       </div>
       <div>
         <h4>Hypercoagulable</h4>
-        <span class="badge" style="display:block;margin-bottom:0.3rem">Antiphospholipid syndrome</span>
-        <span class="badge" style="display:block;margin-bottom:0.3rem">Factor V Leiden</span>
-        <span class="badge" style="display:block;margin-bottom:0.3rem">Protein C/S deficiency</span>
-        <span class="badge" style="display:block;margin-bottom:0.3rem">Pregnancy / postpartum</span>
-        <span class="badge" style="display:block;margin-bottom:0.3rem">OCP use</span>
-        <span class="badge" style="display:block;margin-bottom:0.3rem">Malignancy</span>
+        <span class="badge">Antiphospholipid syndrome</span>
+        <span class="badge">Factor V Leiden</span>
+        <span class="badge">Protein C/S deficiency</span>
+        <span class="badge">Pregnancy / postpartum</span>
+        <span class="badge">OCP use</span>
+        <span class="badge">Malignancy</span>
       </div>
       <div>
         <h4>Non-Modifiable</h4>
-        <span class="badge" style="display:block;margin-bottom:0.3rem">Age (elderly F > M for lacunar)</span>
-        <span class="badge" style="display:block;margin-bottom:0.3rem">Male sex (overall)</span>
-        <span class="badge" style="display:block;margin-bottom:0.3rem">Family history</span>
-        <span class="badge" style="display:block;margin-bottom:0.3rem">Prior TIA / stroke</span>
-        <span class="badge" style="display:block;margin-bottom:0.3rem">CADASIL (NOTCH3)</span>
-        <span class="badge" style="display:block;margin-bottom:0.3rem">Fabry's / Sickle cell</span>
+        <span class="badge">Age (elderly F > M for lacunar)</span>
+        <span class="badge">Male sex (overall)</span>
+        <span class="badge">Family history</span>
+        <span class="badge">Prior TIA / stroke</span>
+        <span class="badge">CADASIL (NOTCH3)</span>
+        <span class="badge">Fabry's / Sickle cell</span>
       </div>
     </div>
   </div>
 
   <!-- Level 2: Arterial vs Venous -->
-
   <div class="row">
     <div class="col">
       <div class="node wide" tabindex="0">
@@ -274,194 +308,186 @@ footer-note { display: block; text-align: center; font-family: ‘Space Mono’,
         <div class="tip">Accounts for the vast majority of strokes. Divided into ischemic (85%) and hemorrhagic (15%). Arterial occlusion → territory infarction.</div>
       </div>
 
-```
-  <!-- Ischemic vs Hemorrhagic -->
-  <div class="row" style="margin-top:0.3rem">
+      <div class="row" style="margin-top:0.3rem">
+        <div class="col">
+          <div class="node wide" tabindex="0">
+            <div class="n c-ischemic">
+              <div class="lbl">Ischaemic <span style="font-size:0.65rem;opacity:0.7">(85%)</span></div>
+            </div>
+            <div class="tip">Most common. Arterial occlusion leads to penumbra + core. Subtypes: Thrombotic, Embolic, Lacunar. MRI > CT early on.</div>
+          </div>
+
+          <div class="row" style="gap:0.5rem; margin-top:0.2rem">
+
+            <!-- THROMBOTIC -->
+            <div class="col">
+              <div class="node" tabindex="0">
+                <div class="n c-thromb">
+                  <div class="lbl">Thrombotic</div>
+                  <div class="sub">large vessel</div>
+                </div>
+                <div class="tip">In-situ clot at atherosclerotic plaque. Large vessel stroke. Evolving / stroke-in-evolution: progressive weakness over 48–72h. Often preceded by TIAs. Fibrin clot.</div>
+              </div>
+            </div>
+
+            <!-- EMBOLIC -->
+            <div class="col">
+              <div class="node" tabindex="0">
+                <div class="n c-embolic">
+                  <div class="lbl">Embolic</div>
+                  <div class="sub">m/c MCA stroke</div>
+                </div>
+                <div class="tip">Hyperacute presentation. Cortical features (+). Rapid recovery possible. Distal vessel involvement. Red clot. Hemorrhagic transformation common. LOC/seizures at onset.</div>
+              </div>
+              <div class="col" style="gap:0.4rem; margin-top:0.2rem">
+                <div class="node" tabindex="0">
+                  <div class="n c-muted" style="min-width:130px">
+                    <div class="lbl">Artery → Artery</div>
+                    <div class="sub">m/c stroke overall</div>
+                  </div>
+                  <div class="tip">Embolus from neck vessels (carotid plaque) → MCA. Most common stroke mechanism overall. Artery-to-artery embolism.</div>
+                </div>
+                <div class="node" tabindex="0">
+                  <div class="n c-muted" style="min-width:130px">
+                    <div class="lbl">Cardioembolic</div>
+                    <div class="sub">seen in ↓</div>
+                  </div>
+                  <div class="tip">Mitral stenosis · Atrial fibrillation · Prosthetic valve · Dilated cardiomyopathy · Recent MI (within 4–6 wks) · Sick sinus syndrome. LA thrombus → cerebral embolus.</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- LACUNAR -->
+            <div class="col">
+              <div class="node" tabindex="0">
+                <div class="n c-lacunar">
+                  <div class="lbl">Lacunar</div>
+                  <div class="sub">30–300 μm vessels</div>
+                </div>
+                <div class="tip">Lipohyalinosis of small perforating arteries (lenticulostriate). 3mm–2cm infarct. RF: HTN (elderly F>M). No cortical signs. CT: hypodense, MRI DWI best.</div>
+              </div>
+              <div class="col" style="gap:0.4rem; margin-top:0.2rem">
+                <div class="node" tabindex="0">
+                  <div class="n c-muted" style="min-width:140px">
+                    <div class="lbl">Pure Motor <span class="hi">(m/c)</span></div>
+                    <div class="sub">PLIC · lenticulostriate a.</div>
+                  </div>
+                  <div class="tip">Face+arm+leg equally weak. Posterior limb of internal capsule. Lenticulostriate artery. No sensory loss, no aphasia, no hemianopia.</div>
+                </div>
+                <div class="node" tabindex="0">
+                  <div class="n c-muted" style="min-width:140px">
+                    <div class="lbl">Pure Sensory</div>
+                    <div class="sub">VPL nucleus · thalamogeniculate a.</div>
+                  </div>
+                  <div class="tip">Hemisensory loss without weakness. Thalamogeniculate artery → VPL nucleus of thalamus.</div>
+                </div>
+                <div class="node" tabindex="0">
+                  <div class="n c-muted" style="min-width:140px">
+                    <div class="lbl">Ataxic Hemiparesis</div>
+                    <div class="sub">basi pons · basilar a.</div>
+                  </div>
+                  <div class="tip">CPC damage → C/L cerebellar findings. CS damage → C/L weakness. DRTC pathway involved. Basi pons lesion.</div>
+                </div>
+                <div class="node" tabindex="0">
+                  <div class="n c-muted" style="min-width:140px">
+                    <div class="lbl">Dysarthria-Clumsy Hand</div>
+                    <div class="sub">basi pons</div>
+                  </div>
+                  <div class="tip">Same mechanism as ataxic hemiparesis. Basilar artery perforators → basi pons. Dysarthria + hand clumsiness without significant limb weakness.</div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="col" style="margin-top:0.3rem">
+          <div class="node wide" tabindex="0">
+            <div class="n c-hemor">
+              <div class="lbl">Haemorrhagic <span style="font-size:0.65rem;opacity:0.7">(15%)</span></div>
+            </div>
+            <div class="tip">Mx by neurosurgeon. Presents with severe headache ("thunderclap"), vomiting, neck stiffness (SAH). CT: hyperdense lesion acutely.</div>
+          </div>
+          <div class="row" style="gap:0.5rem; margin-top:0.2rem">
+            <div class="node" tabindex="0">
+              <div class="n c-muted">
+                <div class="lbl">SAH</div>
+                <div class="sub">subarachnoid</div>
+              </div>
+              <div class="tip">Subarachnoid hemorrhage. Berry aneurysm rupture most common. "Worst headache of life." CT: blood in basal cisterns. LP: xanthochromia if CT -ve.</div>
+            </div>
+            <div class="node" tabindex="0">
+              <div class="n c-muted">
+                <div class="lbl">EDH</div>
+                <div class="sub">extra-dural</div>
+              </div>
+              <div class="tip">Extra-dural hematoma. Middle meningeal artery rupture. Lucid interval → deterioration. Biconvex (lenticular) hyperdensity on CT.</div>
+            </div>
+            <div class="node" tabindex="0">
+              <div class="n c-muted">
+                <div class="lbl">IVH</div>
+                <div class="sub">intraventricular</div>
+              </div>
+              <div class="tip">Intraventricular hemorrhage. Often extension of hypertensive ICH. Blood in ventricles → hydrocephalus. Very poor prognosis.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="vdiv"></div>
+
+    <!-- VENOUS -->
     <div class="col">
       <div class="node wide" tabindex="0">
-        <div class="n c-ischemic">
-          <div class="lbl">Ischaemic <span style="font-size:0.65rem;opacity:0.7">(85%)</span></div>
+        <div class="n c-venous">
+          <div class="lbl">Venous (CVT)</div>
+          <div class="sub">cerebral venous thrombosis</div>
         </div>
-        <div class="tip">Most common. Arterial occlusion leads to penumbra + core. Subtypes: Thrombotic, Embolic, Lacunar. MRI > CT early on.</div>
-      </div>
-
-      <div class="row" style="gap:0.5rem; margin-top:0.2rem">
-
-        <!-- THROMBOTIC -->
-        <div class="col">
-          <div class="node" tabindex="0">
-            <div class="n c-thromb">
-              <div class="lbl">Thrombotic</div>
-              <div class="sub">large vessel</div>
-            </div>
-            <div class="tip">In-situ clot at atherosclerotic plaque. Large vessel stroke. Evolving / stroke-in-evolution: progressive weakness over 48–72h. Often preceded by TIAs. Fibrin clot.</div>
-          </div>
-        </div>
-
-        <!-- EMBOLIC -->
-        <div class="col">
-          <div class="node" tabindex="0">
-            <div class="n c-embolic">
-              <div class="lbl">Embolic</div>
-              <div class="sub">m/c MCA stroke</div>
-            </div>
-            <div class="tip">Hyperacute presentation. Cortical features (+). Rapid recovery possible. Distal vessel involvement. Red clot. Hemorrhagic transformation common. LOC/seizures at onset.</div>
-          </div>
-          <!-- Embolic subtypes -->
-          <div class="col" style="gap:0.4rem; margin-top:0.2rem">
-            <div class="node" tabindex="0">
-              <div class="n c-muted" style="min-width:130px">
-                <div class="lbl">Artery → Artery</div>
-                <div class="sub">m/c stroke overall</div>
-              </div>
-              <div class="tip">Embolus from neck vessels (carotid plaque) → MCA. Most common stroke mechanism overall. Artery-to-artery embolism.</div>
-            </div>
-            <div class="node" tabindex="0">
-              <div class="n c-muted" style="min-width:130px">
-                <div class="lbl">Cardioembolic</div>
-                <div class="sub">seen in ↓</div>
-              </div>
-              <div class="tip">Mitral stenosis · Atrial fibrillation · Prosthetic valve · Dilated cardiomyopathy · Recent MI (within 4–6 wks) · Sick sinus syndrome. LA thrombus → cerebral embolus.</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- LACUNAR -->
-        <div class="col">
-          <div class="node" tabindex="0">
-            <div class="n c-lacunar">
-              <div class="lbl">Lacunar</div>
-              <div class="sub">30–300 μm vessels</div>
-            </div>
-            <div class="tip">Lipohyalinosis of small perforating arteries (lenticulostriate). 3mm–2cm infarct. RF: HTN (elderly F>M). No cortical signs. CT: hypodense, MRI DWI best.</div>
-          </div>
-          <!-- Lacunar types -->
-          <div class="col" style="gap:0.4rem; margin-top:0.2rem">
-            <div class="node" tabindex="0">
-              <div class="n c-muted" style="min-width:140px">
-                <div class="lbl">Pure Motor <span class="hi">(m/c)</span></div>
-                <div class="sub">PLIC · lenticulostriate a.</div>
-              </div>
-              <div class="tip">Face+arm+leg equally weak. Posterior limb of internal capsule. Lenticulostriate artery. No sensory loss, no aphasia, no hemianopia.</div>
-            </div>
-            <div class="node" tabindex="0">
-              <div class="n c-muted" style="min-width:140px">
-                <div class="lbl">Pure Sensory</div>
-                <div class="sub">VPL nucleus · thalamogeniculate a.</div>
-              </div>
-              <div class="tip">Hemisensory loss without weakness. Thalamogeniculate artery → VPL nucleus of thalamus.</div>
-            </div>
-            <div class="node" tabindex="0">
-              <div class="n c-muted" style="min-width:140px">
-                <div class="lbl">Ataxic Hemiparesis</div>
-                <div class="sub">basi pons · basilar a.</div>
-              </div>
-              <div class="tip">CPC damage → C/L cerebellar findings. CS damage → C/L weakness. DRTC pathway involved. Basi pons lesion.</div>
-            </div>
-            <div class="node" tabindex="0">
-              <div class="n c-muted" style="min-width:140px">
-                <div class="lbl">Dysarthria-Clumsy Hand</div>
-                <div class="sub">basi pons</div>
-              </div>
-              <div class="tip">Same mechanism as ataxic hemiparesis. Basilar artery perforators → basi pons. Dysarthria + hand clumsiness without significant limb weakness.</div>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-    <div class="col" style="margin-top:0.3rem">
-      <div class="node wide" tabindex="0">
-        <div class="n c-hemor">
-          <div class="lbl">Haemorrhagic <span style="font-size:0.65rem;opacity:0.7">(15%)</span></div>
-        </div>
-        <div class="tip">Mx by neurosurgeon. Presents with severe headache ("thunderclap"), vomiting, neck stiffness (SAH). CT: hyperdense lesion acutely.</div>
+        <div class="tip">Cerebral venous thrombosis. Symptoms: ↑ICT (headache, vomiting, seizures), patchy weakness. Imaging: "empty delta sign" on contrast CT.</div>
       </div>
       <div class="row" style="gap:0.5rem; margin-top:0.2rem">
-        <div class="node" tabindex="0">
-          <div class="n c-muted">
-            <div class="lbl">SAH</div>
-            <div class="sub">subarachnoid</div>
+        <div class="col">
+          <div class="node" tabindex="0">
+            <div class="n c-muted">
+              <div class="lbl">Inherited</div>
+            </div>
+            <div class="tip">Factor V Leiden mutation (most common inherited thrombophilia). Also: Prothrombin G20210A, Protein C/S deficiency, AT-III deficiency.</div>
           </div>
-          <div class="tip">Subarachnoid hemorrhage. Berry aneurysm rupture most common. "Worst headache of life." CT: blood in basal cisterns. LP: xanthochromia if CT -ve.</div>
         </div>
-        <div class="node" tabindex="0">
-          <div class="n c-muted">
-            <div class="lbl">EDH</div>
-            <div class="sub">extra-dural</div>
+        <div class="col">
+          <div class="node" tabindex="0">
+            <div class="n c-muted">
+              <div class="lbl">Acquired</div>
+            </div>
+            <div class="tip">Antiphospholipid syndrome (APLA). Pregnancy/postpartum (most common acquired cause). OCP use, malignancy, infection (otitis → sigmoid sinus).</div>
           </div>
-          <div class="tip">Extra-dural hematoma. Middle meningeal artery rupture. Lucid interval → deterioration. Biconvex (lenticular) hyperdensity on CT.</div>
         </div>
-        <div class="node" tabindex="0">
-          <div class="n c-muted">
-            <div class="lbl">IVH</div>
-            <div class="sub">intraventricular</div>
+      </div>
+      <div style="margin-top:0.6rem; width:100%">
+        <p class="sec-label" style="margin-bottom:0.3rem">White Matter Conditions</p>
+        <div class="col" style="gap:0.4rem">
+          <div class="node" tabindex="0">
+            <div class="n c-muted" style="min-width:160px">
+              <div class="lbl">CADASIL</div>
+              <div class="sub">NOTCH3 mutation</div>
+            </div>
+            <div class="tip">Cerebral Autosomal Dominant Arteriopathy with Subcortical Infarcts &amp; Leucoencephalopathy. Recurrent lacunar strokes, dementia, migraine. Subcortical white matter lesions.</div>
           </div>
-          <div class="tip">Intraventricular hemorrhage. Often extension of hypertensive ICH. Blood in ventricles → hydrocephalus. Very poor prognosis.</div>
+          <div class="node" tabindex="0">
+            <div class="n c-muted" style="min-width:160px">
+              <div class="lbl">Cerebral Amyloid Angiopathy</div>
+              <div class="sub">microbleeds</div>
+            </div>
+            <div class="tip">Aβ deposition in vessel walls. Cortical microbleeds on GRE/SWI MRI. Lobar hemorrhages in elderly. Increased risk with anticoagulation.</div>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
-</div>
-
-<div class="vdiv"></div>
-
-<!-- VENOUS -->
-<div class="col">
-  <div class="node wide" tabindex="0">
-    <div class="n c-venous">
-      <div class="lbl">Venous (CVT)</div>
-      <div class="sub">cerebral venous thrombosis</div>
-    </div>
-    <div class="tip">Cerebral venous thrombosis. Symptoms: ↑ICT (headache, vomiting, seizures), patchy weakness. Imaging: "empty delta sign" on contrast CT.</div>
-  </div>
-  <div class="row" style="gap:0.5rem; margin-top:0.2rem">
-    <div class="col">
-      <div class="node" tabindex="0">
-        <div class="n c-muted">
-          <div class="lbl">Inherited</div>
-        </div>
-        <div class="tip">Factor V Leiden mutation (most common inherited thrombophilia). Also: Prothrombin G20210A, Protein C/S deficiency, AT-III deficiency.</div>
-      </div>
-    </div>
-    <div class="col">
-      <div class="node" tabindex="0">
-        <div class="n c-muted">
-          <div class="lbl">Acquired</div>
-        </div>
-        <div class="tip">Antiphospholipid syndrome (APLA). Pregnancy/postpartum (most common acquired cause). OCP use, malignancy, infection (otitis → sigmoid sinus).</div>
-      </div>
-    </div>
-  </div>
-  <!-- CADASIL / microbleeds -->
-  <div style="margin-top:0.6rem; width:100%">
-    <p class="sec-label" style="margin-bottom:0.3rem">White Matter Conditions</p>
-    <div class="col" style="gap:0.4rem">
-      <div class="node" tabindex="0">
-        <div class="n c-muted" style="min-width:160px">
-          <div class="lbl">CADASIL</div>
-          <div class="sub">NOTCH3 mutation</div>
-        </div>
-        <div class="tip">Cerebral Autosomal Dominant Arteriopathy with Subcortical Infarcts & Leucoencephalopathy. Recurrent lacunar strokes, dementia, migraine. Subcortical white matter lesions.</div>
-      </div>
-      <div class="node" tabindex="0">
-        <div class="n c-muted" style="min-width:160px">
-          <div class="lbl">Cerebral Amyloid Angiopathy</div>
-          <div class="sub">microbleeds</div>
-        </div>
-        <div class="tip">Aβ deposition in vessel walls. Cortical microbleeds on GRE/SWI MRI. Lobar hemorrhages in elderly. Increased risk with anticoagulation.</div>
-      </div>
-    </div>
-  </div>
-</div>
-```
-
-  </div>
-
-  <!-- ═══════════════════════════════ CENTER NODE ═════════════════════════════ -->
-
+  <!-- ═══════ CENTER NODE ═══════ -->
   <div class="node center-node" tabindex="0" style="margin:0.5rem 0">
     <div class="n c-center">
       <div class="lbl">MCA STROKE</div>
@@ -470,86 +496,80 @@ footer-note { display: block; text-align: center; font-family: ‘Space Mono’,
     <div class="tip">Middle cerebral artery: M1 (sphenoidal), M2 (insular), M3 (opercular), M4 (cortical). Lenticulostriate perforators arise from M1. Dominant supply to motor, sensory, language cortex.</div>
   </div>
 
-  <!-- ═══════════════════════════════ MCA TYPES ════════════════════════════ -->
-
+  <!-- ═══════ MCA TYPES ═══════ -->
   <p class="sec-label">MCA Stroke Types by Territory</p>
 
   <div class="row">
+    <div class="col">
+      <div class="node xwide" tabindex="0">
+        <div class="n c-type">
+          <div class="lbl">Total MCA Infarct</div>
+          <div class="sub">M1 occlusion</div>
+        </div>
+        <div class="tip">Complete MCA territory. Massive edema, midline shift. Contralateral hemiplegia + hemianesthesia + hemianopia + gaze deviation + aphasia/neglect. High mortality.</div>
+      </div>
+      <div class="node" tabindex="0">
+        <div class="n c-child">
+          <div class="lbl">Malignant MCA Syndrome</div>
+          <div class="sub">≥50% territory, ≤60y</div>
+        </div>
+        <div class="tip">Decompressive hemicraniectomy ≤48h. DECIMAL trial: mortality 78% → 29%. NNT ~2. Indicated in age ≤60, NIHSS >15, DWI >145 cm².</div>
+      </div>
+    </div>
 
-```
-<div class="col">
-  <div class="node xwide" tabindex="0">
-    <div class="n c-type">
-      <div class="lbl">Total MCA Infarct</div>
-      <div class="sub">M1 occlusion</div>
+    <div class="col">
+      <div class="node xwide" tabindex="0">
+        <div class="n c-type">
+          <div class="lbl">Superior Division</div>
+          <div class="sub">frontal + parietal operculum</div>
+        </div>
+        <div class="tip">Upper MCA branches. Face+arm > leg weakness. Broca's aphasia (dominant side). Usually embolic. No visual field defect typically.</div>
+      </div>
+      <div class="node" tabindex="0">
+        <div class="n c-child">
+          <div class="lbl">Broca's Aphasia</div>
+          <div class="sub">non-fluent · comprehension intact</div>
+        </div>
+        <div class="tip">Expressive aphasia. Inferior frontal gyrus (Brodmann 44/45). Patient understands but cannot produce fluent speech. Repetition impaired. Aware of deficit → frustrated.</div>
+      </div>
     </div>
-    <div class="tip">Complete MCA territory. Massive edema, midline shift. Contralateral hemiplegia + hemianesthesia + hemianopia + gaze deviation + aphasia/neglect. High mortality.</div>
-  </div>
-  <div class="node" tabindex="0">
-    <div class="n c-child">
-      <div class="lbl">Malignant MCA Syndrome</div>
-      <div class="sub">≥50% territory, ≤60y</div>
-    </div>
-    <div class="tip">Decompressive hemicraniectomy ≤48h. DECIMAL trial: mortality 78% → 29%. NNT ~2. Indicated in age ≤60, NIHSS >15, DWI >145 cm².</div>
-  </div>
-</div>
 
-<div class="col">
-  <div class="node xwide" tabindex="0">
-    <div class="n c-type">
-      <div class="lbl">Superior Division</div>
-      <div class="sub">frontal + parietal operculum</div>
+    <div class="col">
+      <div class="node xwide" tabindex="0">
+        <div class="n c-type">
+          <div class="lbl">Inferior Division</div>
+          <div class="sub">temporal + inf. parietal</div>
+        </div>
+        <div class="tip">Lower MCA branches. Wernicke's aphasia (dominant). Superior quadrantanopia. Hemispatial neglect + anosognosia (non-dominant). Less motor deficit.</div>
+      </div>
+      <div class="node" tabindex="0">
+        <div class="n c-child">
+          <div class="lbl">Wernicke's Aphasia</div>
+          <div class="sub">fluent · poor comprehension</div>
+        </div>
+        <div class="tip">Receptive aphasia. Post. sup. temporal gyrus (Brodmann 22). Fluent but paraphasic speech, word salad. Cannot understand. Patient unaware of deficit.</div>
+      </div>
     </div>
-    <div class="tip">Upper MCA branches. Face+arm > leg weakness. Broca's aphasia (dominant side). Usually embolic. No visual field defect typically.</div>
-  </div>
-  <div class="node" tabindex="0">
-    <div class="n c-child">
-      <div class="lbl">Broca's Aphasia</div>
-      <div class="sub">non-fluent · comprehension intact</div>
-    </div>
-    <div class="tip">Expressive aphasia. Inferior frontal gyrus (Brodmann 44/45). Patient understands but cannot produce fluent speech. Repetition impaired. Aware of deficit → frustrated.</div>
-  </div>
-</div>
 
-<div class="col">
-  <div class="node xwide" tabindex="0">
-    <div class="n c-type">
-      <div class="lbl">Inferior Division</div>
-      <div class="sub">temporal + inf. parietal</div>
+    <div class="col">
+      <div class="node xwide" tabindex="0">
+        <div class="n c-type">
+          <div class="lbl">Deep / Lenticulostriate</div>
+          <div class="sub">perforating branches</div>
+        </div>
+        <div class="tip">Basal ganglia, internal capsule, corona radiata. Lacunar infarcts. Small vessel disease (HTN/DM). No cortical signs — no aphasia, no hemianopia, no neglect.</div>
+      </div>
+      <div class="node" tabindex="0">
+        <div class="n c-child">
+          <div class="lbl">Pure Motor Hemiplegia</div>
+          <div class="sub">PLIC · face=arm=leg</div>
+        </div>
+        <div class="tip">Most common lacunar syndrome. Posterior limb internal capsule. Equal face, arm, leg involvement. No sensory loss. Classic HTN-related small vessel disease.</div>
+      </div>
     </div>
-    <div class="tip">Lower MCA branches. Wernicke's aphasia (dominant). Superior quadrantanopia. Hemispatial neglect + anosognosia (non-dominant). Less motor deficit.</div>
-  </div>
-  <div class="node" tabindex="0">
-    <div class="n c-child">
-      <div class="lbl">Wernicke's Aphasia</div>
-      <div class="sub">fluent · poor comprehension</div>
-    </div>
-    <div class="tip">Receptive aphasia. Post. sup. temporal gyrus (Brodmann 22). Fluent but paraphasic speech, word salad. Cannot understand. Patient unaware of deficit.</div>
-  </div>
-</div>
-
-<div class="col">
-  <div class="node xwide" tabindex="0">
-    <div class="n c-type">
-      <div class="lbl">Deep / Lenticulostriate</div>
-      <div class="sub">perforating branches</div>
-    </div>
-    <div class="tip">Basal ganglia, internal capsule, corona radiata. Lacunar infarcts. Small vessel disease (HTN/DM). No cortical signs — no aphasia, no hemianopia, no neglect.</div>
-  </div>
-  <div class="node" tabindex="0">
-    <div class="n c-child">
-      <div class="lbl">Pure Motor Hemiplegia</div>
-      <div class="sub">PLIC · face=arm=leg</div>
-    </div>
-    <div class="tip">Most common lacunar syndrome. Posterior limb internal capsule. Equal face, arm, leg involvement. No sensory loss. Classic HTN-related small vessel disease.</div>
-  </div>
-</div>
-```
-
   </div>
 
-  <!-- ═══════════════════════════════ PATHOLOGY CASCADE ══════════════════════ -->
-
+  <!-- ═══════ PATHOLOGY CASCADE ═══════ -->
   <div class="sbox" style="max-width:700px">
     <p class="sbox-title" style="color:var(--ischemic)">Ischaemic Pathology Cascade</p>
     <div style="display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap; justify-content:center">
@@ -585,8 +605,7 @@ footer-note { display: block; text-align: center; font-family: ‘Space Mono’,
     </div>
   </div>
 
-  <!-- ═══════════════════════════════ THROMBOTIC vs EMBOLIC TABLE ══════════ -->
-
+  <!-- ═══════ THROMBOTIC vs EMBOLIC ═══════ -->
   <div class="sbox">
     <p class="sbox-title" style="color:var(--arterial)">Thrombotic vs Embolic Stroke</p>
     <table>
@@ -609,8 +628,7 @@ footer-note { display: block; text-align: center; font-family: ‘Space Mono’,
     </table>
   </div>
 
-  <!-- ═══════════════════════════════ CLINICAL FEATURES ══════════════════ -->
-
+  <!-- ═══════ CLINICAL FEATURES ═══════ -->
   <div class="sbox">
     <p class="sbox-title" style="color:var(--type)">Clinical Features by Hemisphere</p>
     <div class="gcols">
@@ -649,18 +667,17 @@ footer-note { display: block; text-align: center; font-family: ‘Space Mono’,
     </div>
   </div>
 
-  <!-- ═══════════════════════════════ MANAGEMENT ══════════════════════════ -->
-
+  <!-- ═══════ MANAGEMENT ═══════ -->
   <div class="sbox">
     <p class="sbox-title" style="color:var(--thrombotic)">Acute Management</p>
     <div class="row" style="gap:0.5rem; justify-content:flex-start">
       <div class="node" tabindex="0">
         <div class="n c-muted"><div class="lbl">IV tPA (Alteplase)</div><div class="sub">≤4.5h · 0.9mg/kg</div></div>
-        <div class="tip">10% bolus + 90% over 60 min. Max 90 mg. BP target <185/110 before, <180/105 during. CI: recent surgery, INR>1.7, plt <100k, ICH.</div>
+        <div class="tip">10% bolus + 90% over 60 min. Max 90 mg. BP target &lt;185/110 before, &lt;180/105 during. CI: recent surgery, INR>1.7, plt &lt;100k, ICH.</div>
       </div>
       <div class="node" tabindex="0">
         <div class="n c-muted"><div class="lbl">Thrombectomy</div><div class="sub">LVO · ≤24h (DAWN/DEFUSE)</div></div>
-        <div class="tip">M1/M2 occlusion. NIHSS ≥6. Stent retriever or aspiration. Extended to 24h with perfusion mismatch imaging. Door-to-puncture <90 min target.</div>
+        <div class="tip">M1/M2 occlusion. NIHSS ≥6. Stent retriever or aspiration. Extended to 24h with perfusion mismatch imaging. Door-to-puncture &lt;90 min target.</div>
       </div>
       <div class="node" tabindex="0">
         <div class="n c-muted"><div class="lbl">Aspirin 325mg</div><div class="sub">24h post-tPA or if no lysis</div></div>
@@ -672,14 +689,41 @@ footer-note { display: block; text-align: center; font-family: ‘Space Mono’,
       </div>
       <div class="node" tabindex="0">
         <div class="n c-muted"><div class="lbl">Goals of Rx</div><div class="sub">acute stroke</div></div>
-        <div class="tip">1. Revascularization & reperfusion. 2. Avoid secondary injury. 3. Establish collateral blood flow. Complications at 4–5 days: ↑ICT, SIADH, metabolic issues, hemorrhagic transformation.</div>
+        <div class="tip">1. Revascularization &amp; reperfusion. 2. Avoid secondary injury. 3. Establish collateral blood flow. Complications at 4–5 days: ↑ICT, SIADH, metabolic issues, hemorrhagic transformation.</div>
       </div>
     </div>
   </div>
 
-</div>
+</div><!-- end .page -->
 
-<footer-note>hover any node for detail · MCA Stroke Concept Map v2</footer-note>
+<div class="footer-note">hover any node for detail · MCA Stroke Concept Map v2</div>
+
+</div><!-- end .page-wrapper -->
+
+<script>
+  // Smart tooltip positioning — keeps tooltips inside the viewport on any screen width
+  document.querySelectorAll('.node').forEach(node => {
+    node.addEventListener('mouseenter', () => {
+      const tip = node.querySelector('.tip');
+      if (!tip) return;
+
+      // Reset classes
+      node.classList.remove('tip-left', 'tip-right', 'tip-below');
+
+      // Let the browser compute natural position first
+      requestAnimationFrame(() => {
+        const r = tip.getBoundingClientRect();
+        const vw = window.innerWidth;
+
+        if (r.left < 8) node.classList.add('tip-right');
+        else if (r.right > vw - 8) node.classList.add('tip-left');
+
+        // If tooltip goes above viewport, flip below
+        if (r.top < 8) node.classList.add('tip-below');
+      });
+    });
+  });
+</script>
 
 </body>
 </html>
