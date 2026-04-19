@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MCA Stroke — Concept Map v2</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0a0a0f;
+    --surface: #12121a;
+    --border: #1e1e2e;
+    --accent: #e63946;       /* core / center */
+    --arterial: #f4a261;     /* arterial */
+    --venous: #a8dadc;       /* venous */
+    --ischemic: #ffd166;     /* ischemic */
+    --hemorrhagic: #ef476f;  /* hemorrhagic */
+    --thrombotic: #06d6a0;   /* thrombotic */
+    --embolic: #118ab2;      /* embolic */
+    --lacunar: #c77dff;      /* lacunar */
+    --nonathero: #ff9f1c;    /* non-atherosclerotic */
+    --type: #2a9d8f;         /* MCA types */
+    --child: #a8dadc;
+    --muted: #6b7280;
+    --text: #e8e8f0;
+    --border-soft: rgba(255,255,255,0.07);
+  }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 9999; opacity: 0.4;
+  }
+
+/* HEADER */
+header {
+padding: 1.5rem 2rem 1rem;
+border-bottom: 1px solid var(–border);
+display: flex; align-items: baseline; gap: 1rem; flex-wrap: wrap;
+}
+header h1 { font-size: clamp(1.3rem,3.5vw,2rem); font-weight: 800; letter-spacing: -0.03em; }
+header h1 span { color: var(–accent); }
+.subtitle { font-family: ‘Space Mono’, monospace; font-size: 0.65rem; color: var(–muted); letter-spacing: 0.1em; text-transform: uppercase; }
+.legend { margin-left: auto; display: flex; gap: 0.8rem; flex-wrap: wrap; align-items: center; }
+.leg { display: flex; align-items: center; gap: 0.35rem; font-size: 0.62rem; font-family: ‘Space Mono’, monospace; color: var(–muted); }
+.leg-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+/* LAYOUT */
+.page { padding: 1.5rem 1rem 3rem; display: flex; flex-direction: column; align-items: center; gap: 1.8rem; }
+
+/* SECTION LABELS */
+.sec-label {
+font-family: ‘Space Mono’, monospace; font-size: 0.58rem; letter-spacing: 0.14em;
+text-transform: uppercase; color: var(–muted); margin-bottom: 0.4rem; text-align: center;
+}
+
+/* NODE BASE */
+.node {
+position: relative; cursor: pointer;
+transition: transform 0.15s ease, filter 0.15s ease;
+}
+.node:hover { transform: translateY(-2px); filter: brightness(1.15); }
+.n {
+border-radius: 5px; padding: 0.5rem 0.9rem;
+border: 1px solid; text-align: center; position: relative; overflow: hidden;
+}
+.n::before { content: ‘’; position: absolute; inset: 0; opacity: 0.06; background: currentColor; }
+.lbl { font-size: 0.75rem; font-weight: 600; line-height: 1.3; position: relative; }
+.sub { font-family: ‘Space Mono’, monospace; font-size: 0.58rem; color: var(–muted); margin-top: 0.15rem; position: relative; }
+
+/* TOOLTIP */
+.tip {
+display: none; position: absolute;
+bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%);
+background: #16162a; border: 1px solid var(–border);
+border-radius: 6px; padding: 0.7rem 0.9rem; width: 210px;
+font-size: 0.68rem; line-height: 1.5; color: var(–text); z-index: 200;
+box-shadow: 0 8px 30px rgba(0,0,0,0.6); text-align: left;
+font-family: ‘Space Mono’, monospace;
+}
+.tip::after {
+content: ‘’; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+border: 5px solid transparent; border-top-color: var(–border);
+}
+.node:hover .tip, .node:focus .tip { display: block; }
+
+/* COLOR CLASSES */
+.c-center    { color: var(–accent);       border-color: var(–accent); }
+.c-arterial  { color: var(–arterial);     border-color: var(–arterial); }
+.c-venous    { color: var(–venous);       border-color: var(–venous); }
+.c-ischemic  { color: var(–ischemic);     border-color: var(–ischemic); }
+.c-hemor     { color: var(–hemorrhagic);  border-color: var(–hemorrhagic); }
+.c-thromb    { color: var(–thrombotic);   border-color: var(–thrombotic); }
+.c-embolic   { color: var(–embolic);      border-color: rgba(17,138,178,0.7); }
+.c-lacunar   { color: var(–lacunar);      border-color: rgba(199,125,255,0.6); }
+.c-nonathero { color: var(–nonathero);    border-color: rgba(255,159,28,0.6); }
+.c-type      { color: var(–type);         border-color: var(–type); }
+.c-child     { color: var(–child);        border-color: rgba(168,218,220,0.45); }
+.c-muted     { color: #94a3b8;             border-color: rgba(148,163,184,0.3); }
+
+/* ROW / COL */
+.row { display: flex; gap: 0.7rem; justify-content: center; flex-wrap: wrap; width: 100%; max-width: 1150px; }
+.col { display: flex; flex-direction: column; align-items: center; gap: 0.55rem; }
+.wide .n { min-width: 150px; }
+.xwide .n { min-width: 190px; }
+
+/* CENTER */
+.center-node .n {
+padding: 0.9rem 2rem; border-radius: 8px; border-width: 2px;
+box-shadow: 0 0 40px rgba(230,57,70,0.18), 0 0 80px rgba(230,57,70,0.06);
+}
+.center-node .lbl { font-size: 1rem; font-weight: 800; letter-spacing: -0.02em; }
+
+/* CONNECTOR LINES using CSS borders */
+.branch-row { position: relative; }
+.branch-row::before {
+content: ‘’; position: absolute; top: 0; left: 50%;
+transform: translateX(-50%);
+width: 1px; height: 1.2rem; background: var(–border);
+}
+
+/* DIVIDER */
+.vdiv { width: 1px; background: var(–border); align-self: stretch; margin: 0 0.3rem; opacity: 0.5; }
+
+/* SECTION BOX */
+.sbox {
+border: 1px solid var(–border); border-radius: 8px;
+padding: 1rem 1.4rem; width: 100%; max-width: 1100px;
+background: rgba(255,255,255,0.01);
+}
+.sbox-title {
+font-family: ‘Space Mono’, monospace; font-size: 0.6rem;
+letter-spacing: 0.12em; text-transform: uppercase;
+margin-bottom: 0.8rem;
+}
+
+/* FEATURE BADGES */
+.badge {
+display: inline-block; background: rgba(255,255,255,0.03);
+border: 1px solid var(–border); border-radius: 3px;
+padding: 0.2rem 0.55rem; font-family: ‘Space Mono’, monospace;
+font-size: 0.6rem; color: var(–muted); margin: 0.12rem;
+transition: border-color 0.2s, color 0.2s;
+}
+.badge:hover { border-color: var(–type); color: var(–type); }
+
+/* GRID */
+.gcols { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px,1fr)); gap: 1rem; }
+.gcols h4 { font-size: 0.58rem; font-family: ‘Space Mono’, monospace; color: var(–muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.4rem; }
+
+/* TABLE */
+table { width: 100%; border-collapse: collapse; font-size: 0.68rem; font-family: ‘Space Mono’, monospace; }
+th { padding: 0.4rem 0.7rem; text-align: left; background: rgba(255,255,255,0.04); color: var(–muted); font-size: 0.58rem; letter-spacing: 0.06em; text-transform: uppercase; border-bottom: 1px solid var(–border); }
+td { padding: 0.4rem 0.7rem; border-bottom: 1px solid rgba(255,255,255,0.04); vertical-align: top; }
+tr:hover td { background: rgba(255,255,255,0.02); }
+.hi { color: var(–accent); font-weight: 700; }
+.hg { color: var(–thrombotic); }
+
+footer-note { display: block; text-align: center; font-family: ‘Space Mono’, monospace; font-size: 0.58rem; color: var(–muted); padding: 1.5rem; letter-spacing: 0.05em; }
+
+@media(max-width:600px){ header{flex-direction:column;} .legend{margin-left:0;} }
+</style>
+
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Middle <span>Cerebral</span> Artery Stroke</h1>
+    <p class="subtitle">Concept Map v2 — Etiology &amp; Types</p>
+  </div>
+  <div class="legend">
+    <div class="leg"><div class="leg-dot" style="background:var(--accent)"></div>Core</div>
+    <div class="leg"><div class="leg-dot" style="background:var(--arterial)"></div>Arterial</div>
+    <div class="leg"><div class="leg-dot" style="background:var(--venous)"></div>Venous</div>
+    <div class="leg"><div class="leg-dot" style="background:var(--ischemic)"></div>Ischemic</div>
+    <div class="leg"><div class="leg-dot" style="background:var(--hemorrhagic)"></div>Hemorrhagic</div>
+    <div class="leg"><div class="leg-dot" style="background:var(--lacunar)"></div>Lacunar</div>
+    <div class="leg"><div class="leg-dot" style="background:var(--type)"></div>MCA Types</div>
+  </div>
+</header>
+
+<div class="page">
+
+  <!-- ═══════════════════════════════ ETIOLOGY TOP ═══════════════════════════ -->
+
+  <p class="sec-label">Etiology — Broad Classification</p>
+
+  <!-- Level 1: Atherosclerotic vs Non-Atherosclerotic -->
+
+  <div class="row">
+    <div class="col">
+      <div class="node xwide" tabindex="0">
+        <div class="n c-arterial">
+          <div class="lbl">Atherosclerotic</div>
+          <div class="sub">major cause</div>
+        </div>
+        <div class="tip">Plaque formation in large vessels (ICA, MCA origin). Risk factors: HTN, DM, dyslipidemia, smoking. Leads to thrombotic or artery-to-artery embolic strokes.</div>
+      </div>
+    </div>
+    <div class="vdiv"></div>
+    <div class="col">
+      <div class="node xwide" tabindex="0">
+        <div class="n c-nonathero">
+          <div class="lbl">Non-Atherosclerotic</div>
+          <div class="sub">arterial — various</div>
+        </div>
+        <div class="tip">Vasculitis, Fabry's disease, Fibromuscular dysplasia (FMD), Carotid artery dissection, Takayasu arteritis, Moya-moya disease ("puff of smoke" — multiple collaterals, ICA vasculopathy).</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RISK FACTORS -->
+
+  <div class="sbox" style="max-width:900px">
+    <p class="sbox-title" style="color:var(--arterial)">Risk Factors</p>
+    <div class="gcols" style="grid-template-columns: repeat(auto-fit, minmax(140px,1fr))">
+      <div>
+        <h4>Modifiable</h4>
+        <span class="badge" style="display:block;margin-bottom:0.3rem">Hypertension <span style="color:var(--accent)">★ #1</span></span>
+        <span class="badge" style="display:block;margin-bottom:0.3rem">Atrial Fibrillation</span>
+        <span class="badge" style="display:block;margin-bottom:0.3rem">Diabetes Mellitus</span>
+        <span class="badge" style="display:block;margin-bottom:0.3rem">Dyslipidemia</span>
+        <span class="badge" style="display:block;margin-bottom:0.3rem">Smoking</span>
+        <span class="badge" style="display:block;margin-bottom:0.3rem">Obesity / Physical inactivity</span>
+      </div>
+      <div>
+        <h4>Cardiac Sources</h4>
+        <span class="badge" style="display:block;margin-bottom:0.3rem">Mitral stenosis</span>
+        <span class="badge" style="display:block;margin-bottom:0.3rem">Atrial fibrillation</span>
+        <span class="badge" style="display:block;margin-bottom:0.3rem">Prosthetic valve</span>
+        <span class="badge" style="display:block;margin-bottom:0.3rem">Dilated cardiomyopathy</span>
+        <span class="badge" style="display:block;margin-bottom:0.3rem">Recent MI (≤4–6 wks)</span>
+        <span class="badge" style="display:block;margin-bottom:0.3rem">Sick sinus syndrome</span>
+      </div>
+      <div>
+        <h4>Hypercoagulable</h4>
+        <span class="badge" style="display:block;margin-bottom:0.3rem">Antiphospholipid syndrome</span>
+        <span class="badge" style="display:block;margin-bottom:0.3rem">Factor V Leiden</span>
+        <span class="badge" style="display:block;margin-bottom:0.3rem">Protein C/S deficiency</span>
+        <span class="badge" style="display:block;margin-bottom:0.3rem">Pregnancy / postpartum</span>
+        <span class="badge" style="display:block;margin-bottom:0.3rem">OCP use</span>
+        <span class="badge" style="display:block;margin-bottom:0.3rem">Malignancy</span>
+      </div>
+      <div>
+        <h4>Non-Modifiable</h4>
+        <span class="badge" style="display:block;margin-bottom:0.3rem">Age (elderly F > M for lacunar)</span>
+        <span class="badge" style="display:block;margin-bottom:0.3rem">Male sex (overall)</span>
+        <span class="badge" style="display:block;margin-bottom:0.3rem">Family history</span>
+        <span class="badge" style="display:block;margin-bottom:0.3rem">Prior TIA / stroke</span>
+        <span class="badge" style="display:block;margin-bottom:0.3rem">CADASIL (NOTCH3)</span>
+        <span class="badge" style="display:block;margin-bottom:0.3rem">Fabry's / Sickle cell</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Level 2: Arterial vs Venous -->
+
+  <div class="row">
+    <div class="col">
+      <div class="node wide" tabindex="0">
+        <div class="n c-arterial">
+          <div class="lbl">Arterial</div>
+        </div>
+        <div class="tip">Accounts for the vast majority of strokes. Divided into ischemic (85%) and hemorrhagic (15%). Arterial occlusion → territory infarction.</div>
+      </div>
+
+```
+  <!-- Ischemic vs Hemorrhagic -->
+  <div class="row" style="margin-top:0.3rem">
+    <div class="col">
+      <div class="node wide" tabindex="0">
+        <div class="n c-ischemic">
+          <div class="lbl">Ischaemic <span style="font-size:0.65rem;opacity:0.7">(85%)</span></div>
+        </div>
+        <div class="tip">Most common. Arterial occlusion leads to penumbra + core. Subtypes: Thrombotic, Embolic, Lacunar. MRI > CT early on.</div>
+      </div>
+
+      <div class="row" style="gap:0.5rem; margin-top:0.2rem">
+
+        <!-- THROMBOTIC -->
+        <div class="col">
+          <div class="node" tabindex="0">
+            <div class="n c-thromb">
+              <div class="lbl">Thrombotic</div>
+              <div class="sub">large vessel</div>
+            </div>
+            <div class="tip">In-situ clot at atherosclerotic plaque. Large vessel stroke. Evolving / stroke-in-evolution: progressive weakness over 48–72h. Often preceded by TIAs. Fibrin clot.</div>
+          </div>
+        </div>
+
+        <!-- EMBOLIC -->
+        <div class="col">
+          <div class="node" tabindex="0">
+            <div class="n c-embolic">
+              <div class="lbl">Embolic</div>
+              <div class="sub">m/c MCA stroke</div>
+            </div>
+            <div class="tip">Hyperacute presentation. Cortical features (+). Rapid recovery possible. Distal vessel involvement. Red clot. Hemorrhagic transformation common. LOC/seizures at onset.</div>
+          </div>
+          <!-- Embolic subtypes -->
+          <div class="col" style="gap:0.4rem; margin-top:0.2rem">
+            <div class="node" tabindex="0">
+              <div class="n c-muted" style="min-width:130px">
+                <div class="lbl">Artery → Artery</div>
+                <div class="sub">m/c stroke overall</div>
+              </div>
+              <div class="tip">Embolus from neck vessels (carotid plaque) → MCA. Most common stroke mechanism overall. Artery-to-artery embolism.</div>
+            </div>
+            <div class="node" tabindex="0">
+              <div class="n c-muted" style="min-width:130px">
+                <div class="lbl">Cardioembolic</div>
+                <div class="sub">seen in ↓</div>
+              </div>
+              <div class="tip">Mitral stenosis · Atrial fibrillation · Prosthetic valve · Dilated cardiomyopathy · Recent MI (within 4–6 wks) · Sick sinus syndrome. LA thrombus → cerebral embolus.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- LACUNAR -->
+        <div class="col">
+          <div class="node" tabindex="0">
+            <div class="n c-lacunar">
+              <div class="lbl">Lacunar</div>
+              <div class="sub">30–300 μm vessels</div>
+            </div>
+            <div class="tip">Lipohyalinosis of small perforating arteries (lenticulostriate). 3mm–2cm infarct. RF: HTN (elderly F>M). No cortical signs. CT: hypodense, MRI DWI best.</div>
+          </div>
+          <!-- Lacunar types -->
+          <div class="col" style="gap:0.4rem; margin-top:0.2rem">
+            <div class="node" tabindex="0">
+              <div class="n c-muted" style="min-width:140px">
+                <div class="lbl">Pure Motor <span class="hi">(m/c)</span></div>
+                <div class="sub">PLIC · lenticulostriate a.</div>
+              </div>
+              <div class="tip">Face+arm+leg equally weak. Posterior limb of internal capsule. Lenticulostriate artery. No sensory loss, no aphasia, no hemianopia.</div>
+            </div>
+            <div class="node" tabindex="0">
+              <div class="n c-muted" style="min-width:140px">
+                <div class="lbl">Pure Sensory</div>
+                <div class="sub">VPL nucleus · thalamogeniculate a.</div>
+              </div>
+              <div class="tip">Hemisensory loss without weakness. Thalamogeniculate artery → VPL nucleus of thalamus.</div>
+            </div>
+            <div class="node" tabindex="0">
+              <div class="n c-muted" style="min-width:140px">
+                <div class="lbl">Ataxic Hemiparesis</div>
+                <div class="sub">basi pons · basilar a.</div>
+              </div>
+              <div class="tip">CPC damage → C/L cerebellar findings. CS damage → C/L weakness. DRTC pathway involved. Basi pons lesion.</div>
+            </div>
+            <div class="node" tabindex="0">
+              <div class="n c-muted" style="min-width:140px">
+                <div class="lbl">Dysarthria-Clumsy Hand</div>
+                <div class="sub">basi pons</div>
+              </div>
+              <div class="tip">Same mechanism as ataxic hemiparesis. Basilar artery perforators → basi pons. Dysarthria + hand clumsiness without significant limb weakness.</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="col" style="margin-top:0.3rem">
+      <div class="node wide" tabindex="0">
+        <div class="n c-hemor">
+          <div class="lbl">Haemorrhagic <span style="font-size:0.65rem;opacity:0.7">(15%)</span></div>
+        </div>
+        <div class="tip">Mx by neurosurgeon. Presents with severe headache ("thunderclap"), vomiting, neck stiffness (SAH). CT: hyperdense lesion acutely.</div>
+      </div>
+      <div class="row" style="gap:0.5rem; margin-top:0.2rem">
+        <div class="node" tabindex="0">
+          <div class="n c-muted">
+            <div class="lbl">SAH</div>
+            <div class="sub">subarachnoid</div>
+          </div>
+          <div class="tip">Subarachnoid hemorrhage. Berry aneurysm rupture most common. "Worst headache of life." CT: blood in basal cisterns. LP: xanthochromia if CT -ve.</div>
+        </div>
+        <div class="node" tabindex="0">
+          <div class="n c-muted">
+            <div class="lbl">EDH</div>
+            <div class="sub">extra-dural</div>
+          </div>
+          <div class="tip">Extra-dural hematoma. Middle meningeal artery rupture. Lucid interval → deterioration. Biconvex (lenticular) hyperdensity on CT.</div>
+        </div>
+        <div class="node" tabindex="0">
+          <div class="n c-muted">
+            <div class="lbl">IVH</div>
+            <div class="sub">intraventricular</div>
+          </div>
+          <div class="tip">Intraventricular hemorrhage. Often extension of hypertensive ICH. Blood in ventricles → hydrocephalus. Very poor prognosis.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="vdiv"></div>
+
+<!-- VENOUS -->
+<div class="col">
+  <div class="node wide" tabindex="0">
+    <div class="n c-venous">
+      <div class="lbl">Venous (CVT)</div>
+      <div class="sub">cerebral venous thrombosis</div>
+    </div>
+    <div class="tip">Cerebral venous thrombosis. Symptoms: ↑ICT (headache, vomiting, seizures), patchy weakness. Imaging: "empty delta sign" on contrast CT.</div>
+  </div>
+  <div class="row" style="gap:0.5rem; margin-top:0.2rem">
+    <div class="col">
+      <div class="node" tabindex="0">
+        <div class="n c-muted">
+          <div class="lbl">Inherited</div>
+        </div>
+        <div class="tip">Factor V Leiden mutation (most common inherited thrombophilia). Also: Prothrombin G20210A, Protein C/S deficiency, AT-III deficiency.</div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="node" tabindex="0">
+        <div class="n c-muted">
+          <div class="lbl">Acquired</div>
+        </div>
+        <div class="tip">Antiphospholipid syndrome (APLA). Pregnancy/postpartum (most common acquired cause). OCP use, malignancy, infection (otitis → sigmoid sinus).</div>
+      </div>
+    </div>
+  </div>
+  <!-- CADASIL / microbleeds -->
+  <div style="margin-top:0.6rem; width:100%">
+    <p class="sec-label" style="margin-bottom:0.3rem">White Matter Conditions</p>
+    <div class="col" style="gap:0.4rem">
+      <div class="node" tabindex="0">
+        <div class="n c-muted" style="min-width:160px">
+          <div class="lbl">CADASIL</div>
+          <div class="sub">NOTCH3 mutation</div>
+        </div>
+        <div class="tip">Cerebral Autosomal Dominant Arteriopathy with Subcortical Infarcts & Leucoencephalopathy. Recurrent lacunar strokes, dementia, migraine. Subcortical white matter lesions.</div>
+      </div>
+      <div class="node" tabindex="0">
+        <div class="n c-muted" style="min-width:160px">
+          <div class="lbl">Cerebral Amyloid Angiopathy</div>
+          <div class="sub">microbleeds</div>
+        </div>
+        <div class="tip">Aβ deposition in vessel walls. Cortical microbleeds on GRE/SWI MRI. Lobar hemorrhages in elderly. Increased risk with anticoagulation.</div>
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+  </div>
+
+  <!-- ═══════════════════════════════ CENTER NODE ═════════════════════════════ -->
+
+  <div class="node center-node" tabindex="0" style="margin:0.5rem 0">
+    <div class="n c-center">
+      <div class="lbl">MCA STROKE</div>
+      <div class="sub">~70% of all strokes · lateral cortex + BG + IC</div>
+    </div>
+    <div class="tip">Middle cerebral artery: M1 (sphenoidal), M2 (insular), M3 (opercular), M4 (cortical). Lenticulostriate perforators arise from M1. Dominant supply to motor, sensory, language cortex.</div>
+  </div>
+
+  <!-- ═══════════════════════════════ MCA TYPES ════════════════════════════ -->
+
+  <p class="sec-label">MCA Stroke Types by Territory</p>
+
+  <div class="row">
+
+```
+<div class="col">
+  <div class="node xwide" tabindex="0">
+    <div class="n c-type">
+      <div class="lbl">Total MCA Infarct</div>
+      <div class="sub">M1 occlusion</div>
+    </div>
+    <div class="tip">Complete MCA territory. Massive edema, midline shift. Contralateral hemiplegia + hemianesthesia + hemianopia + gaze deviation + aphasia/neglect. High mortality.</div>
+  </div>
+  <div class="node" tabindex="0">
+    <div class="n c-child">
+      <div class="lbl">Malignant MCA Syndrome</div>
+      <div class="sub">≥50% territory, ≤60y</div>
+    </div>
+    <div class="tip">Decompressive hemicraniectomy ≤48h. DECIMAL trial: mortality 78% → 29%. NNT ~2. Indicated in age ≤60, NIHSS >15, DWI >145 cm².</div>
+  </div>
+</div>
+
+<div class="col">
+  <div class="node xwide" tabindex="0">
+    <div class="n c-type">
+      <div class="lbl">Superior Division</div>
+      <div class="sub">frontal + parietal operculum</div>
+    </div>
+    <div class="tip">Upper MCA branches. Face+arm > leg weakness. Broca's aphasia (dominant side). Usually embolic. No visual field defect typically.</div>
+  </div>
+  <div class="node" tabindex="0">
+    <div class="n c-child">
+      <div class="lbl">Broca's Aphasia</div>
+      <div class="sub">non-fluent · comprehension intact</div>
+    </div>
+    <div class="tip">Expressive aphasia. Inferior frontal gyrus (Brodmann 44/45). Patient understands but cannot produce fluent speech. Repetition impaired. Aware of deficit → frustrated.</div>
+  </div>
+</div>
+
+<div class="col">
+  <div class="node xwide" tabindex="0">
+    <div class="n c-type">
+      <div class="lbl">Inferior Division</div>
+      <div class="sub">temporal + inf. parietal</div>
+    </div>
+    <div class="tip">Lower MCA branches. Wernicke's aphasia (dominant). Superior quadrantanopia. Hemispatial neglect + anosognosia (non-dominant). Less motor deficit.</div>
+  </div>
+  <div class="node" tabindex="0">
+    <div class="n c-child">
+      <div class="lbl">Wernicke's Aphasia</div>
+      <div class="sub">fluent · poor comprehension</div>
+    </div>
+    <div class="tip">Receptive aphasia. Post. sup. temporal gyrus (Brodmann 22). Fluent but paraphasic speech, word salad. Cannot understand. Patient unaware of deficit.</div>
+  </div>
+</div>
+
+<div class="col">
+  <div class="node xwide" tabindex="0">
+    <div class="n c-type">
+      <div class="lbl">Deep / Lenticulostriate</div>
+      <div class="sub">perforating branches</div>
+    </div>
+    <div class="tip">Basal ganglia, internal capsule, corona radiata. Lacunar infarcts. Small vessel disease (HTN/DM). No cortical signs — no aphasia, no hemianopia, no neglect.</div>
+  </div>
+  <div class="node" tabindex="0">
+    <div class="n c-child">
+      <div class="lbl">Pure Motor Hemiplegia</div>
+      <div class="sub">PLIC · face=arm=leg</div>
+    </div>
+    <div class="tip">Most common lacunar syndrome. Posterior limb internal capsule. Equal face, arm, leg involvement. No sensory loss. Classic HTN-related small vessel disease.</div>
+  </div>
+</div>
+```
+
+  </div>
+
+  <!-- ═══════════════════════════════ PATHOLOGY CASCADE ══════════════════════ -->
+
+  <div class="sbox" style="max-width:700px">
+    <p class="sbox-title" style="color:var(--ischemic)">Ischaemic Pathology Cascade</p>
+    <div style="display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap; justify-content:center">
+      <div class="node" tabindex="0">
+        <div class="n c-muted"><div class="lbl">Causative factor</div></div>
+        <div class="tip">Atherosclerosis, embolism, small vessel disease → arterial occlusion.</div>
+      </div>
+      <span style="color:var(--muted); font-size:1.2rem">→</span>
+      <div class="node" tabindex="0">
+        <div class="n c-muted"><div class="lbl">ATP depletion</div></div>
+        <div class="tip">CBF falls below threshold (~20 mL/100g/min). Oxidative phosphorylation fails within minutes of complete ischemia.</div>
+      </div>
+      <span style="color:var(--muted); font-size:1.2rem">→</span>
+      <div class="node" tabindex="0">
+        <div class="n c-ischemic"><div class="lbl">Na⁺-K⁺ ATPase failure</div></div>
+        <div class="tip">Pump failure → cytotoxic edema. Intracellular Na⁺ and water accumulate. Cell swells. DWI restriction appears within 30 min.</div>
+      </div>
+      <span style="color:var(--muted); font-size:1.2rem">→</span>
+      <div class="node" tabindex="0">
+        <div class="n c-ischemic"><div class="lbl">Glutamate release</div></div>
+        <div class="tip">Excitotoxicity. NMDA receptor activation → Ca²⁺ influx. Triggers proteases, lipases, endonucleases. Spreads to penumbra.</div>
+      </div>
+      <span style="color:var(--muted); font-size:1.2rem">→</span>
+      <div class="node" tabindex="0">
+        <div class="n c-muted"><div class="lbl">Ca²⁺ entry</div></div>
+        <div class="tip">Intracellular Ca²⁺ activates destructive enzymes. Mitochondrial dysfunction, ROS production, caspase activation → apoptosis.</div>
+      </div>
+      <span style="color:var(--muted); font-size:1.2rem">→</span>
+      <div class="node" tabindex="0">
+        <div class="n c-hemor"><div class="lbl">Liquefactive necrosis</div></div>
+        <div class="tip">Brain undergoes liquefactive (not coagulative) necrosis — due to high lipid content + proteolytic enzymes from microglia. Cavitation on imaging weeks later.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════ THROMBOTIC vs EMBOLIC TABLE ══════════ -->
+
+  <div class="sbox">
+    <p class="sbox-title" style="color:var(--arterial)">Thrombotic vs Embolic Stroke</p>
+    <table>
+      <thead>
+        <tr>
+          <th>Feature</th>
+          <th style="color:var(--thrombotic)">Thrombotic</th>
+          <th style="color:var(--embolic)">Embolic</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Onset</td><td>Stroke in evolution (progressive)</td><td class="hi">Hyperacute (maximal at onset)</td></tr>
+        <tr><td>Features</td><td>↑ Headache</td><td>LOC / seizures</td></tr>
+        <tr><td>Weakness</td><td>↑ over 48–72 hrs</td><td>Full at onset</td></tr>
+        <tr><td>Clot type</td><td>Fibrin clot (white)</td><td class="hi">Red clot</td></tr>
+        <tr><td>Transformation</td><td>—</td><td class="hi">Hemorrhagic transformation</td></tr>
+        <tr><td>Cortical signs</td><td>Variable</td><td class="hg">Present (+)</td></tr>
+        <tr><td>Recovery</td><td>Gradual</td><td class="hg">Rapid (partial) possible</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ═══════════════════════════════ CLINICAL FEATURES ══════════════════ -->
+
+  <div class="sbox">
+    <p class="sbox-title" style="color:var(--type)">Clinical Features by Hemisphere</p>
+    <div class="gcols">
+      <div>
+        <h4>Dominant (L) MCA</h4>
+        <span class="badge">Aphasia (Broca/Wernicke/Global)</span>
+        <span class="badge">Right hemiplegia</span>
+        <span class="badge">Right hemisensory loss</span>
+        <span class="badge">Right homonymous hemianopia</span>
+        <span class="badge">Alexia / Agraphia</span>
+        <span class="badge">Face + Arm > Leg</span>
+      </div>
+      <div>
+        <h4>Non-Dominant (R) MCA</h4>
+        <span class="badge">Left hemispatial neglect</span>
+        <span class="badge">Anosognosia</span>
+        <span class="badge">Constructional apraxia</span>
+        <span class="badge">Aprosodia</span>
+        <span class="badge">Left homonymous hemianopia</span>
+        <span class="badge">Left hemiplegia</span>
+      </div>
+      <div>
+        <h4>Gaze Deviation</h4>
+        <span class="badge">Eyes toward lesion (cortical)</span>
+        <span class="badge">"Looking at the stroke"</span>
+        <span class="badge">Frontal eye field damage</span>
+        <span class="badge">Pontine: eyes away from lesion</span>
+      </div>
+      <div>
+        <h4>Early CT Signs (MCA)</h4>
+        <span class="badge">Hyperdense MCA sign (≥6h) — earliest</span>
+        <span class="badge">MCA dot sign</span>
+        <span class="badge">Insular ribbon sign (6–48h)</span>
+        <span class="badge">Obscuration of lentiform nucleus (8–24h)</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════ MANAGEMENT ══════════════════════════ -->
+
+  <div class="sbox">
+    <p class="sbox-title" style="color:var(--thrombotic)">Acute Management</p>
+    <div class="row" style="gap:0.5rem; justify-content:flex-start">
+      <div class="node" tabindex="0">
+        <div class="n c-muted"><div class="lbl">IV tPA (Alteplase)</div><div class="sub">≤4.5h · 0.9mg/kg</div></div>
+        <div class="tip">10% bolus + 90% over 60 min. Max 90 mg. BP target <185/110 before, <180/105 during. CI: recent surgery, INR>1.7, plt <100k, ICH.</div>
+      </div>
+      <div class="node" tabindex="0">
+        <div class="n c-muted"><div class="lbl">Thrombectomy</div><div class="sub">LVO · ≤24h (DAWN/DEFUSE)</div></div>
+        <div class="tip">M1/M2 occlusion. NIHSS ≥6. Stent retriever or aspiration. Extended to 24h with perfusion mismatch imaging. Door-to-puncture <90 min target.</div>
+      </div>
+      <div class="node" tabindex="0">
+        <div class="n c-muted"><div class="lbl">Aspirin 325mg</div><div class="sub">24h post-tPA or if no lysis</div></div>
+        <div class="tip">Do NOT give with tPA. Within 24–48h otherwise. Reduces early recurrence by ~25%.</div>
+      </div>
+      <div class="node" tabindex="0">
+        <div class="n c-muted"><div class="lbl">Permissive HTN</div><div class="sub">Allow ≤220/120</div></div>
+        <div class="tip">Impaired autoregulation. Lowering BP can extend penumbra infarct. Only treat if >220/120 (no lysis) or for tPA eligibility. IV labetalol or nicardipine.</div>
+      </div>
+      <div class="node" tabindex="0">
+        <div class="n c-muted"><div class="lbl">Goals of Rx</div><div class="sub">acute stroke</div></div>
+        <div class="tip">1. Revascularization & reperfusion. 2. Avoid secondary injury. 3. Establish collateral blood flow. Complications at 4–5 days: ↑ICT, SIADH, metabolic issues, hemorrhagic transformation.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer-note>hover any node for detail · MCA Stroke Concept Map v2</footer-note>
+
+</body>
+</html>
